@@ -1,4 +1,4 @@
-package pl.tciesla.simulator.server.valuation.util;
+package pl.tciesla.simulator.server.valuation;
 
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
@@ -19,7 +19,7 @@ public class RandomValuationUpdaterTest {
                 .withValuation(new BigDecimal("5.00"))
                 .build();
         // when
-        RandomValuationUpdater.updateValuation(mutualFund, -10, 10);
+        RandomValuationUpdater.updateFromRange(mutualFund, -10, 10);
         // then
         BigDecimal resultValuation = mutualFund.getValuation();
         Assertions.assertThat(resultValuation)

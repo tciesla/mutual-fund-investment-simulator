@@ -1,4 +1,4 @@
-package pl.tciesla.simulator.server.valuation.util;
+package pl.tciesla.simulator.server.valuation;
 
 import pl.tciesla.simulator.commons.domain.MutualFund;
 
@@ -14,7 +14,7 @@ public class RandomValuationUpdater {
 
     private static final Random random = new Random();
 
-    public static void updateValuation(MutualFund mutualFund, int penniesFrom, int penniesTo) {
+    public static void updateFromRange(MutualFund mutualFund, int penniesFrom, int penniesTo) {
         BigDecimal change = generateChangeBetween(penniesFrom, penniesTo);
         BigDecimal previousValuation = mutualFund.getValuation();
         BigDecimal actualValuation = previousValuation.add(change);

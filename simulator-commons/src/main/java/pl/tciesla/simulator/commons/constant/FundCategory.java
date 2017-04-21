@@ -5,5 +5,6 @@ public enum FundCategory {
     BOND,
     STABLE_GROWTH,
     BALANCED,
-    STOCK
+    STOCK,
+    DUMMY
 }
