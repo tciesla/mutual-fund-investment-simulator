@@ -1,6 +1,6 @@
-package pl.tciesla.simulator.commons.domain;
+package pl.tciesla.simulator.client.domain;
 
-import pl.tciesla.simulator.commons.constant.ShareType;
+import pl.tciesla.simulator.client.constant.ShareType;
 
 import javax.xml.bind.annotation.*;
 

@@ -2,7 +2,7 @@ package pl.tciesla.simulator.client.commands;
 
 import pl.tciesla.simulator.client.ClientSingleton;
 import pl.tciesla.simulator.client.CommandStrategy;
-import pl.tciesla.simulator.commons.domain.MutualFunds;
+import pl.tciesla.simulator.client.domain.MutualFunds;
 
 import javax.ws.rs.core.MediaType;
 

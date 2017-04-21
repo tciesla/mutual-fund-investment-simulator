@@ -1,6 +1,6 @@
-package pl.tciesla.simulator.commons.domain;
+package pl.tciesla.simulator.client.domain;
 
-import pl.tciesla.simulator.commons.constant.FundCategory;
+import pl.tciesla.simulator.client.constant.FundCategory;
 
 import javax.xml.bind.annotation.*;
 import java.math.BigDecimal;

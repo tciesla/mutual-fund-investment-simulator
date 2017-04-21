@@ -1,21 +1,17 @@
 package pl.tciesla.simulator.server.valuation;
 
-import org.assertj.core.api.Assertions;
 import org.junit.Test;
-import pl.tciesla.simulator.commons.builder.MutualFundBuilder;
-import pl.tciesla.simulator.commons.constant.FundCategory;
-import pl.tciesla.simulator.commons.domain.MutualFund;
+import pl.tciesla.simulator.server.builder.MutualFundBuilder;
+import pl.tciesla.simulator.server.constant.FundCategory;
 import pl.tciesla.simulator.server.dao.MutualFundDao;
+import pl.tciesla.simulator.server.domain.MutualFund;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class ValuationSourceBeanTest {
 

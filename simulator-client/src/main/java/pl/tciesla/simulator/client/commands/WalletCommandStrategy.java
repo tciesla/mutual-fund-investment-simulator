@@ -3,14 +3,13 @@ package pl.tciesla.simulator.client.commands;
 import pl.tciesla.simulator.client.ClientSingleton;
 import pl.tciesla.simulator.client.CommandStrategy;
 import pl.tciesla.simulator.client.Defaults;
-import pl.tciesla.simulator.commons.domain.Customer;
-import pl.tciesla.simulator.commons.domain.MutualFund;
-import pl.tciesla.simulator.commons.domain.MutualFunds;
+import pl.tciesla.simulator.client.domain.Customer;
+import pl.tciesla.simulator.client.domain.MutualFund;
+import pl.tciesla.simulator.client.domain.MutualFunds;
 
 import javax.ws.rs.core.MediaType;
 import java.math.BigDecimal;
 import java.util.Map;
-import java.util.Scanner;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 

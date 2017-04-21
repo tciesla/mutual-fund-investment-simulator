@@ -1,6 +1,6 @@
 package pl.tciesla.simulator.server.dao;
 
-import pl.tciesla.simulator.commons.domain.MutualFund;
+import pl.tciesla.simulator.server.domain.MutualFund;
 
 import java.util.List;
 

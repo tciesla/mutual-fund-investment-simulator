@@ -1,7 +1,7 @@
 package pl.tciesla.simulator.server.valuation;
 
-import pl.tciesla.simulator.commons.domain.MutualFund;
 import pl.tciesla.simulator.server.dao.MutualFundDao;
+import pl.tciesla.simulator.server.domain.MutualFund;
 
 import javax.ejb.EJB;
 import javax.ejb.Schedule;

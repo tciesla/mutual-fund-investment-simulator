@@ -1,6 +1,6 @@
 package pl.tciesla.simulator.server.dao;
 
-import pl.tciesla.simulator.commons.domain.Customer;
+import pl.tciesla.simulator.server.domain.Customer;
 
 /**
  * Data Access Object for Customer

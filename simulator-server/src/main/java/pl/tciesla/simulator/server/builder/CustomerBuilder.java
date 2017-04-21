@@ -1,7 +1,7 @@
-package pl.tciesla.simulator.commons.builder;
+package pl.tciesla.simulator.server.builder;
 
-import pl.tciesla.simulator.commons.domain.Customer;
-import pl.tciesla.simulator.commons.domain.FundShares;
+import pl.tciesla.simulator.server.domain.Customer;
+import pl.tciesla.simulator.server.domain.FundShares;
 
 import java.math.BigDecimal;
 import java.util.HashMap;

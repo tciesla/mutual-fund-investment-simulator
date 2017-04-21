@@ -1,4 +1,4 @@
-package pl.tciesla.simulator.commons.constant;
+package pl.tciesla.simulator.server.constant;
 
 public enum FundCategory {
     MONEY_MARKET,

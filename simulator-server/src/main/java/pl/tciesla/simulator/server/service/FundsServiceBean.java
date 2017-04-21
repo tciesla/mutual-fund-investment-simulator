@@ -1,7 +1,7 @@
 package pl.tciesla.simulator.server.service;
 
-import pl.tciesla.simulator.commons.domain.MutualFunds;
 import pl.tciesla.simulator.server.dao.MutualFundDao;
+import pl.tciesla.simulator.server.domain.MutualFunds;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;

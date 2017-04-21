@@ -3,7 +3,7 @@ package pl.tciesla.simulator.client.commands;
 import pl.tciesla.simulator.client.ClientSingleton;
 import pl.tciesla.simulator.client.CommandStrategy;
 import pl.tciesla.simulator.client.Defaults;
-import pl.tciesla.simulator.commons.constant.ShareType;
+import pl.tciesla.simulator.client.constant.ShareType;
 
 import javax.ws.rs.core.MediaType;
 import java.util.Scanner;

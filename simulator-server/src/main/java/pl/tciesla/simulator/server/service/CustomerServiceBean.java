@@ -1,13 +1,13 @@
 package pl.tciesla.simulator.server.service;
 
-import pl.tciesla.simulator.commons.builder.CustomerBuilder;
-import pl.tciesla.simulator.commons.builder.FundSharesBuilder;
-import pl.tciesla.simulator.commons.constant.ShareType;
-import pl.tciesla.simulator.commons.domain.Customer;
-import pl.tciesla.simulator.commons.domain.FundShares;
-import pl.tciesla.simulator.commons.domain.MutualFund;
+import pl.tciesla.simulator.server.builder.CustomerBuilder;
+import pl.tciesla.simulator.server.builder.FundSharesBuilder;
+import pl.tciesla.simulator.server.constant.ShareType;
 import pl.tciesla.simulator.server.dao.CustomerDao;
 import pl.tciesla.simulator.server.dao.MutualFundDao;
+import pl.tciesla.simulator.server.domain.Customer;
+import pl.tciesla.simulator.server.domain.FundShares;
+import pl.tciesla.simulator.server.domain.MutualFund;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;

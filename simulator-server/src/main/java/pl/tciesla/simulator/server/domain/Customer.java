@@ -1,4 +1,4 @@
-package pl.tciesla.simulator.commons.domain;
+package pl.tciesla.simulator.server.domain;
 
 import javax.xml.bind.annotation.*;
 import java.math.BigDecimal;

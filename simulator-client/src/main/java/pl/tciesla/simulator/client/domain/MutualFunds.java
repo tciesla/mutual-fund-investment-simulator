@@ -1,4 +1,4 @@
-package pl.tciesla.simulator.commons.domain;
+package pl.tciesla.simulator.client.domain;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

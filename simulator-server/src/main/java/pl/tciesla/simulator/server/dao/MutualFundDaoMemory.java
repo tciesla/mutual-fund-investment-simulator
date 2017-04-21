@@ -1,8 +1,8 @@
 package pl.tciesla.simulator.server.dao;
 
-import pl.tciesla.simulator.commons.builder.MutualFundBuilder;
-import pl.tciesla.simulator.commons.constant.FundCategory;
-import pl.tciesla.simulator.commons.domain.MutualFund;
+import pl.tciesla.simulator.server.builder.MutualFundBuilder;
+import pl.tciesla.simulator.server.constant.FundCategory;
+import pl.tciesla.simulator.server.domain.MutualFund;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.Singleton;

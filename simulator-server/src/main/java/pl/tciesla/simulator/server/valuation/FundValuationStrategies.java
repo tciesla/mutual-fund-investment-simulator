@@ -1,6 +1,6 @@
 package pl.tciesla.simulator.server.valuation;
 
-import pl.tciesla.simulator.commons.constant.FundCategory;
+import pl.tciesla.simulator.server.constant.FundCategory;
 
 import java.util.HashMap;
 import java.util.Map;

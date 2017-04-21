@@ -1,7 +1,7 @@
-package pl.tciesla.simulator.commons.builder;
+package pl.tciesla.simulator.server.builder;
 
-import pl.tciesla.simulator.commons.constant.FundCategory;
-import pl.tciesla.simulator.commons.domain.MutualFund;
+import pl.tciesla.simulator.server.constant.FundCategory;
+import pl.tciesla.simulator.server.domain.MutualFund;
 
 import java.math.BigDecimal;
 

@@ -3,9 +3,9 @@ package pl.tciesla.simulator.server.valuation;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.springframework.test.annotation.Repeat;
-import pl.tciesla.simulator.commons.builder.MutualFundBuilder;
-import pl.tciesla.simulator.commons.constant.FundCategory;
-import pl.tciesla.simulator.commons.domain.MutualFund;
+import pl.tciesla.simulator.server.builder.MutualFundBuilder;
+import pl.tciesla.simulator.server.constant.FundCategory;
+import pl.tciesla.simulator.server.domain.MutualFund;
 
 import java.math.BigDecimal;
 

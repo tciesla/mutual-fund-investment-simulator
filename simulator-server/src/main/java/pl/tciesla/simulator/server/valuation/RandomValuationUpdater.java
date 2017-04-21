@@ -1,6 +1,6 @@
 package pl.tciesla.simulator.server.valuation;
 
-import pl.tciesla.simulator.commons.domain.MutualFund;
+import pl.tciesla.simulator.server.domain.MutualFund;
 
 import java.math.BigDecimal;
 import java.util.Random;

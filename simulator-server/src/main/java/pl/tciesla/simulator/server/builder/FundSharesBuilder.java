@@ -1,7 +1,7 @@
-package pl.tciesla.simulator.commons.builder;
+package pl.tciesla.simulator.server.builder;
 
-import pl.tciesla.simulator.commons.constant.ShareType;
-import pl.tciesla.simulator.commons.domain.FundShares;
+import pl.tciesla.simulator.server.constant.ShareType;
+import pl.tciesla.simulator.server.domain.FundShares;
 
 public class FundSharesBuilder {
 
