@@ -11,8 +11,8 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>simulator-server</module>
-        <module>simulator-client</module>
+        <module>server</module>
+        <module>client-cli</module>
     </modules>
 
     <properties>

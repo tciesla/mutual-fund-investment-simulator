@@ -4,8 +4,6 @@ import pl.tciesla.simulator.client.ClientSingleton;
 import pl.tciesla.simulator.client.CommandStrategy;
 import pl.tciesla.simulator.client.Defaults;
 
-import java.util.Scanner;
-
 /**
  * Strategy enables to remove customer from simulator.
  */

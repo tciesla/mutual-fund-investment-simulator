@@ -6,16 +6,16 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <artifactId>investment-simulator</artifactId>
+        <artifactId>mutual-fund-simulator</artifactId>
         <groupId>pl.tciesla</groupId>
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>simulator-server</artifactId>
+    <artifactId>server</artifactId>
     <packaging>war</packaging>
 
     <build>
-        <finalName>simulator</finalName>
+        <finalName>mutual-fund-simulator-server</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

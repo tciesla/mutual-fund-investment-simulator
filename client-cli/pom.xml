@@ -6,16 +6,16 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <artifactId>investment-simulator</artifactId>
+        <artifactId>mutual-fund-simulator</artifactId>
         <groupId>pl.tciesla</groupId>
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>simulator-client</artifactId>
+    <artifactId>client-cli</artifactId>
     <packaging>jar</packaging>
 
     <build>
-        <finalName>simulator-client</finalName>
+        <finalName>mutual-fund-simulator-client-cli</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
