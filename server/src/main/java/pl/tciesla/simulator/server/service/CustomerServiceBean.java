@@ -1,162 +1,226 @@
 package pl.tciesla.simulator.server.service;
 
 import pl.tciesla.simulator.server.builder.CustomerBuilder;
-import pl.tciesla.simulator.server.builder.FundSharesBuilder;
-import pl.tciesla.simulator.server.constant.ShareType;
 import pl.tciesla.simulator.server.dao.CustomerDao;
 import pl.tciesla.simulator.server.dao.MutualFundDao;
 import pl.tciesla.simulator.server.domain.Customer;
-import pl.tciesla.simulator.server.domain.FundShares;
 import pl.tciesla.simulator.server.domain.MutualFund;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.math.BigDecimal;
-import java.util.Map;
+import java.util.function.BiFunction;
 import java.util.logging.Logger;
 
-/**
- * REST web services to access customer resources.
- */
-@Path("/customer")
+import static javax.ws.rs.core.Response.Status.*;
+
 @Stateless
+@Path("/customer")
 public class CustomerServiceBean {
 
     private static final Logger log = Logger.getLogger(CustomerServiceBean.class.getName());
 
-    private static final String FEE_RATE = "0.02";
+    private static final BigDecimal FEE_RATE = BigDecimal.valueOf(0.02);
 
-    @EJB private CustomerDao customerDao;
-    @EJB private MutualFundDao mutualFundDao;
+    @EJB
+    private CustomerDao customerDao;
+
+    @EJB
+    private MutualFundDao mutualFundDao;
 
     @GET
     @Path("/{username}")
     public Response getCustomer(@PathParam("username") String username) {
-        log.info("received get request for customer[" + username + "]");
-        createCustomerIfNotExists(username);
-        return Response.ok(customerDao.fetch(username)).build();
+        log.info("received get request for username[" + username + "]");
+
+        if (username == null || username.isEmpty()) {
+            log.info("username cannot be empty");
+            return Response.status(BAD_REQUEST).build();
+        }
+
+        Customer customer = customerDao.fetch(username);
+        if (customer == null) {
+            log.info("customer with username[" + username + "] not found");
+            return Response.status(NOT_FOUND).build();
+        }
+
+        return Response.ok(customer).build();
     }
 
-    private void createCustomerIfNotExists(String username) {
-        if (customerDao.fetch(username) == null) {
-            customerDao.persist(CustomerBuilder.aCustomerBuilder()
-                    .withName(username)
-                    .build());
-            log.info("customer[" + username + "] has been created");
+    @POST
+    @Path("/{username}")
+    public Response createCustomer(@PathParam("username") String username) {
+        log.info("received post request for username[" + username + "]");
+
+        if (username == null || username.isEmpty()) {
+            log.info("username cannot be empty");
+            return Response.status(BAD_REQUEST).build();
         }
+        if (customerDao.fetch(username) != null) {
+            log.info("given username[" + username + "] is already in use");
+            return Response.status(BAD_REQUEST).build();
+        }
+
+        Customer customer = CustomerBuilder.aCustomerBuilder().withName(username).build();
+        customerDao.persist(customer);
+        log.info("customer with username[" + username + "] has been created");
+        return Response.ok(customer).build();
     }
 
     @DELETE
     @Path("/{username}")
-    @Produces(MediaType.TEXT_PLAIN)
-    public String deleteCustomer(@PathParam("username") String username) {
+    public Response deleteCustomer(@PathParam("username") String username) {
         log.info("received delete request for customer[" + username + "]");
-        customerDao.remove(username);
-        log.info("customer[" + username + "] has been removed");
-        return "Delete operation completed.";
+
+        if (username == null || username.isEmpty()) {
+            log.info("username cannot be empty");
+            return Response.status(BAD_REQUEST).build();
+        }
+
+        boolean removed = customerDao.remove(username);
+        if (!removed) {
+            log.info("customer with username[" + username + "] not removed");
+            return Response.status(INTERNAL_SERVER_ERROR).build();
+        }
+
+        log.info("customer with username[" + username + "] has been removed");
+        return Response.ok().build();
     }
 
     @GET
-    @Path("/{username}/buy/{fundId}/{type}/{amount}")
-    @Produces(MediaType.TEXT_PLAIN)
-    public String buyShares(@PathParam("username") String username,
-                              @PathParam("fundId") long fundId,
-                              @PathParam("type") ShareType shareType,
-                              @PathParam("amount") long amount) {
-        if (amount <= 0) { return "Shares amount have to be greater than zero"; }
-        if (fundId <= 0) { return "Fund id have to be greater than zero."; }
-        MutualFund mutualFund = mutualFundDao.fetch(fundId);
-        if (mutualFund == null) { return "Fund with given id does not exists."; }
-        BigDecimal transactionValue = mutualFund.getValuation().multiply(new BigDecimal(amount));
-        BigDecimal fee = calculateTransactionFee(transactionValue);
-        BigDecimal transactionCost = transactionValue.add(fee);
+    @Path("/{username}/buy/{fundId}/{amount}")
+    public Response buyFundShares(
+            @PathParam("username") String username,
+            @PathParam("fundId") Long fundId,
+            @PathParam("amount") Long amount) {
 
-        createCustomerIfNotExists(username);
-        Customer customer = customerDao.fetch(username);
-        if (hasEnoughCash(transactionCost, customer)) {
-            customer.setCash(customer.getCash().subtract(transactionCost));
-            FundShares fundShares = createFundShares(fundId, shareType);
-            if (customer.getFundShares().containsKey(fundShares)) {
-                long previousSharesAmount = customer.getFundShares().get(fundShares);
-                customer.getFundShares().put(fundShares, previousSharesAmount + amount);
-            } else {
-                customer.getFundShares().put(fundShares, amount);
-            }
-            customerDao.persist(customer);
-            return "Transaction completed.";
-        } else {
-            return "You do not have enough cash to buy shares.";
+        log.info("received buy request for username[" + username + "]");
+
+        if (username == null || username.isEmpty()) {
+            log.info("username cannot be empty");
+            return Response.status(BAD_REQUEST).build();
         }
-    }
 
-    private BigDecimal calculateTransactionFee(BigDecimal transactionValue) {
-        BigDecimal fee = transactionValue.multiply(new BigDecimal(FEE_RATE));
-        return fee.setScale(2, BigDecimal.ROUND_UP);
-    }
+        Customer customer = customerDao.fetch(username);
+        if (customer == null) {
+            log.info("customer with username[" + username + "] not found");
+            return Response.status(BAD_REQUEST).build();
+        }
 
-    private boolean hasEnoughCash(BigDecimal totalCost, Customer customer) {
-        int compareResult = customer.getCash().compareTo(totalCost);
-        return compareResult == 0 || compareResult == 1;
-    }
+        if (fundId == null) {
+            log.info("incorrect mutual fund id");
+            return Response.status(BAD_REQUEST).build();
+        }
 
-    private FundShares createFundShares(long fundId, ShareType shareType) {
-        return FundSharesBuilder.aFundSharesBuilder()
-                .withFundId(fundId)
-                .withType(shareType)
-                .build();
+        MutualFund mutualFund = mutualFundDao.fetch(fundId);
+        if (mutualFund == null) {
+            log.info("fund with id[" + fundId + "] not found");
+            return Response.status(BAD_REQUEST).build();
+        }
+
+        if (amount == null || amount <= 0) {
+            log.info("incorrect shares amount");
+            return Response.status(BAD_REQUEST).build();
+        }
+
+        BigDecimal transactionCost = calculateTransactionCashFlow(mutualFund, amount, BigDecimal::add);
+        if (!customer.hasEnoughCash(transactionCost)) {
+            log.info("customer do not have enough cash to buy shares.");
+            return Response.status(BAD_REQUEST).build();
+        }
+
+        customer.buy(fundId, amount, transactionCost);
+        customerDao.persist(customer);
+        log.info("buy transaction completed");
+
+        return Response.ok().build();
     }
 
     @GET
-    @Path("/{username}/sell/{fundId}/{type}/{amount}")
-    @Produces(MediaType.TEXT_PLAIN)
-    public String sellShares(@PathParam("username") String username,
-                               @PathParam("fundId") long fundId,
-                               @PathParam("type") ShareType shareType,
-                               @PathParam("amount") long amount) {
-        if (amount <= 0) { return "Shares amount have to be greater than zero"; }
-        if (fundId <= 0) { return "Fund id have to be greater than zero."; }
-        MutualFund mutualFund = mutualFundDao.fetch(fundId);
-        if (mutualFund == null) { return "Fund with given id does not exists."; }
-        createCustomerIfNotExists(username);
-        Customer customer = customerDao.fetch(username);
-        FundShares fundShares = createFundShares(fundId, shareType);
-        if (hasEnoughShares(fundShares, amount, customer)) {
-            long previousSharesAmount = customer.getFundShares().get(fundShares);
-            customer.getFundShares().put(fundShares, previousSharesAmount - amount);
-            if (customer.getFundShares().get(fundShares) == 0) {
-                customer.getFundShares().remove(fundShares);
-            }
-            BigDecimal transactionValue = mutualFund.getValuation().multiply(new BigDecimal(amount));
-            BigDecimal transactionRevenue = transactionValue.subtract(calculateTransactionFee(transactionValue));
-            customer.setCash(customer.getCash().add(transactionRevenue));
-            customerDao.persist(customer);
-            return "Transaction completed.";
-        } else {
-            return "You do not have enough shares to sell.";
-        }
-    }
+    @Path("/{username}/sell/{fundId}/{amount}")
+    public Response sellShares(
+            @PathParam("username") String username,
+            @PathParam("fundId") Long fundId,
+            @PathParam("amount") Long amount) {
 
-    private boolean hasEnoughShares(FundShares fundShares, long amount, Customer customer) {
-        return customer.getFundShares().getOrDefault(fundShares, 0L) >= amount;
+        log.info("received sell request for username[" + username + "]");
+
+        if (username == null || username.isEmpty()) {
+            log.info("username cannot be empty");
+            return Response.status(BAD_REQUEST).build();
+        }
+
+        Customer customer = customerDao.fetch(username);
+        if (customer == null) {
+            log.info("customer with username[" + username + "] not found");
+            return Response.status(BAD_REQUEST).build();
+        }
+
+        if (fundId == null) {
+            log.info("incorrect mutual fund id");
+            return Response.status(BAD_REQUEST).build();
+        }
+
+        MutualFund mutualFund = mutualFundDao.fetch(fundId);
+        if (mutualFund == null) {
+            log.info("fund with id[" + fundId + "] not found");
+            return Response.status(BAD_REQUEST).build();
+        }
+
+        if (amount == null || amount <= 0) {
+            log.info("incorrect shares amount");
+            return Response.status(BAD_REQUEST).build();
+        }
+
+        if (!customer.hasEnoughShares(fundId, amount)) {
+            log.info("customer do not have enough shares to sell.");
+            return Response.status(BAD_REQUEST).build();
+        }
+
+        BigDecimal transactionProfit = calculateTransactionCashFlow(mutualFund, amount, BigDecimal::subtract);
+        customer.sell(fundId, amount, transactionProfit);
+        customerDao.persist(customer);
+        log.info("sell transaction completed.");
+
+        return Response.ok().build();
     }
 
     @GET
     @Path("/{username}/valuation")
-    @Produces(MediaType.TEXT_PLAIN)
-    public String getWalletValuation(@PathParam("username") String username) {
-        createCustomerIfNotExists(username);
-        Customer customer = customerDao.fetch(username);
-        BigDecimal walletValuation = BigDecimal.ZERO;
-        for (Map.Entry<FundShares, Long> entry : customer.getFundShares().entrySet()) {
-            long fundId = entry.getKey().getFundId();
-            BigDecimal fundValuation = mutualFundDao.fetch(fundId).getValuation();
-            BigDecimal sharesAmount = new BigDecimal(entry.getValue());
-            walletValuation = walletValuation.add(fundValuation.multiply(sharesAmount));
+    public Response getWalletValuation(@PathParam("username") String username) {
+        log.info("received wallet valuation request for username[" + username + "]");
+
+        if (username == null || username.isEmpty()) {
+            log.info("username cannot be empty");
+            return Response.status(BAD_REQUEST).build();
         }
-        walletValuation = walletValuation.add(customer.getCash());
-        return walletValuation.toString();
+
+        Customer customer = customerDao.fetch(username);
+        if (customer == null) {
+            log.info("customer with username[" + username + "] not found");
+            return Response.status(BAD_REQUEST).build();
+        }
+
+        BigDecimal walletValuation = customer.getFundShares().entrySet().stream()
+                .map((entry) -> {
+                    Long fundId = entry.getKey();
+                    BigDecimal valuation = mutualFundDao.fetch(fundId).getValuation();
+                    Long shares = entry.getValue();
+                    return valuation.multiply(BigDecimal.valueOf(shares));
+                }).reduce(customer.getCash(), BigDecimal::add);
+
+        return Response.ok(walletValuation).build();
     }
+
+    private BigDecimal calculateTransactionCashFlow(MutualFund mutualFund, Long amount,
+                                                    BiFunction<BigDecimal, BigDecimal, BigDecimal> f) {
+
+        BigDecimal currentFundValuation = mutualFund.getValuation();
+        BigDecimal transactionValue = currentFundValuation.multiply(BigDecimal.valueOf(amount));
+        BigDecimal fee = transactionValue.multiply(FEE_RATE).setScale(2, BigDecimal.ROUND_UP);
+        return f.apply(transactionValue, fee);
+    }
+
 }

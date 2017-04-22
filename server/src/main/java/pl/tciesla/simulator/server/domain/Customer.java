@@ -14,9 +14,32 @@ public class Customer {
     @XmlElement(required = true)
     private BigDecimal cash;
     @XmlElement(required = true)
-    private Map<FundShares, Long> fundShares;
+    private Map<Long, Long> fundShares;
 
     public Customer() {}
+
+    public boolean hasEnoughCash(BigDecimal totalCost) {
+        return cash.compareTo(totalCost) >= 0;
+    }
+
+    public boolean hasEnoughShares(Long fundId, Long amount) {
+        return fundShares.getOrDefault(fundId, 0L) >= amount;
+    }
+
+    public void buy(Long fundId, Long amount, BigDecimal transactionCost) {
+        cash = cash.subtract(transactionCost);
+        Long oldAmount = fundShares.getOrDefault(fundId, 0L);
+        fundShares.put(fundId, oldAmount + amount);
+    }
+
+    public void sell(Long fundId, Long amount, BigDecimal transactionProfit) {
+        cash = cash.add(transactionProfit);
+        long oldSharesAmount = fundShares.get(fundId);
+        fundShares.put(fundId, oldSharesAmount - amount);
+        if (fundShares.get(fundId) == 0) {
+            fundShares.remove(fundId);
+        }
+    }
 
     public String getUsername() {
         return username;
@@ -34,11 +57,11 @@ public class Customer {
         this.cash = cash;
     }
 
-    public Map<FundShares, Long> getFundShares() {
+    public Map<Long, Long> getFundShares() {
         return fundShares;
     }
 
-    public void setFundShares(Map<FundShares, Long> fundShares) {
+    public void setFundShares(Map<Long, Long> fundShares) {
         this.fundShares = fundShares;
     }
 

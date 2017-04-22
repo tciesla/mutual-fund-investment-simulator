@@ -1,7 +1,6 @@
 package pl.tciesla.simulator.server.builder;
 
 import pl.tciesla.simulator.server.domain.Customer;
-import pl.tciesla.simulator.server.domain.FundShares;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -13,7 +12,7 @@ public class CustomerBuilder {
 
     private String username;
     private BigDecimal cash = new BigDecimal(INITIAL_CUSTOMER_CASH_AMOUNT);
-    private Map<FundShares, Long> fundShares = new HashMap<>();
+    private Map<Long, Long> fundShares = new HashMap<>();
 
     public static CustomerBuilder aCustomerBuilder() {
         return new CustomerBuilder();
@@ -29,7 +28,7 @@ public class CustomerBuilder {
         return this;
     }
 
-    public CustomerBuilder withFundShares(Map<FundShares, Long> fundShares) {
+    public CustomerBuilder withFundShares(Map<Long, Long> fundShares) {
         this.fundShares = fundShares;
         return this;
     }
