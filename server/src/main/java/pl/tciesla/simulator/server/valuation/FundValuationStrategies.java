@@ -1,6 +1,7 @@
 package pl.tciesla.simulator.server.valuation;
 
 import pl.tciesla.simulator.server.constant.FundCategory;
+import pl.tciesla.simulator.server.domain.MutualFund;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,7 +22,8 @@ public class FundValuationStrategies {
         strategies.put(FundCategory.DUMMY, fund -> log.warning("Invoked valuation process for incorrect fund category."));
     }
 
-    public static FundValuationStrategy getStrategy(FundCategory category) {
+    public static FundValuationStrategy get(MutualFund mutualFund) {
+        FundCategory category = mutualFund.getCategory();
         return category == null || !strategies.containsKey(category) ?
             strategies.get(FundCategory.DUMMY) : strategies.get(category);
     }
