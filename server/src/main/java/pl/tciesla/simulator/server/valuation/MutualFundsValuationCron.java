@@ -25,7 +25,7 @@ public class MutualFundsValuationCron {
     public void updateMutualFundsValuation() {
         mutualFundDao.fetchAll().forEach(mutualFund -> {
             logger.info("Fund[" + mutualFund.getId() + "] old valuation: " + mutualFund.getValuation());
-            FundValuationStrategies.get(mutualFund).updateValuation(mutualFund);
+            FundValuationStrategies.getStrategy(mutualFund.getCategory()).updateValuation(mutualFund);
             logger.info("Fund[" + mutualFund.getId() + "] new valuation: " + mutualFund.getValuation());
             mutualFundDao.persist(mutualFund);
         });

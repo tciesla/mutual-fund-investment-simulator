@@ -1,15 +1,16 @@
 package pl.tciesla.simulator.server.valuation;
 
+import com.google.common.base.Preconditions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import pl.tciesla.simulator.server.constant.FundCategory;
-import pl.tciesla.simulator.server.domain.MutualFund;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
 
 public class FundValuationStrategies {
 
-    private static final Logger log = Logger.getLogger(FundValuationStrategies.class.getName());
+    private static final Logger logger = LoggerFactory.getLogger(FundValuationStrategies.class);
 
     private static final Map<FundCategory, FundValuationStrategy> strategies = new HashMap<>();
 
@@ -19,13 +20,12 @@ public class FundValuationStrategies {
         strategies.put(FundCategory.STABLE_GROWTH, fund -> RandomValuationUpdater.updateFromRange(fund, -65, 85));
         strategies.put(FundCategory.BALANCED, fund -> RandomValuationUpdater.updateFromRange(fund, -80, 96));
         strategies.put(FundCategory.STOCK, fund -> RandomValuationUpdater.updateFromRange(fund, -100, 110));
-        strategies.put(FundCategory.DUMMY, fund -> log.warning("Invoked valuation process for incorrect fund category."));
     }
 
-    public static FundValuationStrategy get(MutualFund mutualFund) {
-        FundCategory category = mutualFund.getCategory();
-        return category == null || !strategies.containsKey(category) ?
-            strategies.get(FundCategory.DUMMY) : strategies.get(category);
+    public static FundValuationStrategy getStrategy(FundCategory fundCategory) {
+        Preconditions.checkNotNull(fundCategory, "fundCategory == null");
+        return strategies.containsKey(fundCategory) ? strategies.get(fundCategory) :
+                fund -> logger.error("valuation strategy for fundCategory[{}] do not exists", fund.getCategory());
     }
 
 }
