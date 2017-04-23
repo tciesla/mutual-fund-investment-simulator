@@ -1,30 +1,51 @@
 package pl.tciesla.simulator.server.valuation;
 
-import org.assertj.core.api.Assertions;
 import org.junit.Test;
-import org.springframework.test.annotation.Repeat;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 import pl.tciesla.simulator.server.builder.MutualFundBuilder;
-import pl.tciesla.simulator.server.constant.FundCategory;
 import pl.tciesla.simulator.server.domain.MutualFund;
 
 import java.math.BigDecimal;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+@RunWith(MockitoJUnitRunner.class)
 public class RandomValuationUpdaterTest {
 
-    @Test @Repeat(10)
-    public void shouldUpdateExampleMutualFundValuation() throws Exception {
+    @Mock
+    private MutualFund mutualFund;
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowExceptionWhenMutualFundIsNull() throws Exception {
+        // when
+        RandomValuationUpdater.updateFromRange(null, -10, 10);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowExceptionWhenCentsFromAreAboveZero() throws Exception {
+        // when
+        RandomValuationUpdater.updateFromRange(mutualFund, 1, 10);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowExceptionWhenCentsToBelowZero() throws Exception {
+        // when
+        RandomValuationUpdater.updateFromRange(mutualFund, -10, -1);
+    }
+
+    @Test
+    public void shouldUpdateMutualFundValuationInGivenRange() throws Exception {
         // given
         MutualFund mutualFund = MutualFundBuilder.aMutualFundBuilder()
-                .withCategory(FundCategory.STOCK)
-                .withValuation(new BigDecimal("5.00"))
-                .build();
+                .withValuation(BigDecimal.valueOf(10.00)).build();
         // when
         RandomValuationUpdater.updateFromRange(mutualFund, -10, 10);
         // then
-        BigDecimal resultValuation = mutualFund.getValuation();
-        Assertions.assertThat(resultValuation)
-                .isLessThanOrEqualTo(new BigDecimal("5.10"))
-                .isGreaterThanOrEqualTo(new BigDecimal("4.90"));
+        assertThat(mutualFund.getValuation())
+                .isLessThanOrEqualTo(BigDecimal.valueOf(10.10))
+                .isGreaterThanOrEqualTo(BigDecimal.valueOf(9.90));
     }
 
 }

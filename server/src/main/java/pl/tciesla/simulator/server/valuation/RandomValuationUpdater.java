@@ -1,5 +1,6 @@
 package pl.tciesla.simulator.server.valuation;
 
+import com.google.common.base.Preconditions;
 import pl.tciesla.simulator.server.domain.MutualFund;
 
 import java.math.BigDecimal;
@@ -7,30 +8,35 @@ import java.util.Random;
 
 import static java.lang.Math.abs;
 
-/**
- * Util class that implement random update mutual funds valuation.
- */
 public class RandomValuationUpdater {
 
-    private static final Random random = new Random();
+    private static final Random random = new Random(System.currentTimeMillis());
 
-    public static void updateFromRange(MutualFund mutualFund, int penniesFrom, int penniesTo) {
-        BigDecimal change = generateChangeBetween(penniesFrom, penniesTo);
+    /**
+     * Updates mutual fund valuation with random change in cents from range.
+     * @param centsFrom should be value less or equal to zero
+     * @param centsTo should be value greater or equal to zero
+     */
+    public static void updateFromRange(MutualFund mutualFund, int centsFrom, int centsTo) {
+        Preconditions.checkNotNull(mutualFund, "mutualFund == null");
+        Preconditions.checkArgument(centsFrom <= 0, "centsFrom > 0");
+        Preconditions.checkArgument(centsTo >= 0, "centsTo < 0");
+
+        BigDecimal change = generateChangeBetween(centsFrom, centsTo);
         BigDecimal previousValuation = mutualFund.getValuation();
-        BigDecimal actualValuation = previousValuation.add(change);
-        if (BigDecimal.ZERO.compareTo(actualValuation) == 1) return;
-        mutualFund.setValuation(previousValuation.add(change));
+        BigDecimal valuation = previousValuation.add(change);
+        if (BigDecimal.ZERO.compareTo(valuation) == 1) return;
+        mutualFund.setValuation(valuation);
     }
 
     /**
-     * Generate random change in pennies.
-     * @param penniesFrom should be value less or equal to zero.
-     * @param penniesTo should be value greater or equal to zero.
+     * Generates random change in cents.
      * @return change in format X.XX
      */
-    private static BigDecimal generateChangeBetween(int penniesFrom, int penniesTo) {
-        int pennies = random.nextInt(abs(penniesFrom) + penniesTo + 1) + penniesFrom;
-        BigDecimal change = new BigDecimal(pennies / 100.0);
+    private static BigDecimal generateChangeBetween(int centsFrom, int centsTo) {
+        int cents = random.nextInt(abs(centsFrom) + centsTo + 1) + centsFrom;
+        BigDecimal change = new BigDecimal(cents / 100.0);
         return change.setScale(2, BigDecimal.ROUND_HALF_EVEN);
     }
+
 }
