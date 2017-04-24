@@ -7,7 +7,6 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import pl.tciesla.simulator.server.builder.MutualFundBuilder;
 import pl.tciesla.simulator.server.dao.MutualFundDao;
 import pl.tciesla.simulator.server.domain.MutualFund;
 
@@ -60,11 +59,11 @@ public class MutualFundsValuationCronTest {
     }
 
     private MutualFund createMutualFund(long id, String name, BigDecimal valuation) {
-        return MutualFundBuilder.aMutualFundBuilder()
-                .withId(id)
-                .withName(name)
-                .withValuation(valuation)
-                .withCategory(MutualFund.Category.STOCK)
+        return MutualFund.builder()
+                .id(id)
+                .name(name)
+                .valuation(valuation)
+                .category(MutualFund.Category.STOCK)
                 .build();
     }
 

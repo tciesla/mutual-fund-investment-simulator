@@ -4,7 +4,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import pl.tciesla.simulator.server.builder.MutualFundBuilder;
 import pl.tciesla.simulator.server.domain.MutualFund;
 
 import java.math.BigDecimal;
@@ -38,8 +37,9 @@ public class RandomValuationUpdaterTest {
     @Test
     public void shouldUpdateMutualFundValuationInGivenRange() throws Exception {
         // given
-        MutualFund mutualFund = MutualFundBuilder.aMutualFundBuilder()
-                .withValuation(BigDecimal.valueOf(10.00)).build();
+        MutualFund mutualFund = MutualFund.builder()
+                .valuation(BigDecimal.valueOf(10.00))
+                .build();
         // when
         RandomValuationUpdater.updateFromRange(mutualFund, -10, 10);
         // then

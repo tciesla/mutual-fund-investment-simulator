@@ -26,7 +26,7 @@ public class RandomValuationUpdater {
         BigDecimal previousValuation = mutualFund.getValuation();
         BigDecimal valuation = previousValuation.add(change);
         if (BigDecimal.ZERO.compareTo(valuation) == 1) return;
-        mutualFund.setValuation(valuation);
+        mutualFund.updateValuation(valuation);
     }
 
     /**

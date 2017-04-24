@@ -1,5 +1,7 @@
 package pl.tciesla.simulator.server.domain;
 
+import com.google.common.collect.Maps;
+
 import javax.xml.bind.annotation.*;
 import java.math.BigDecimal;
 import java.util.Map;
@@ -9,6 +11,8 @@ import java.util.Map;
 @XmlType(propOrder = {"username", "cash", "fundShares"})
 public class Customer {
 
+    private static final BigDecimal INITIAL_CASH = BigDecimal.valueOf(1000.00);
+
     @XmlElement(required = true)
     private String username;
     @XmlElement(required = true)
@@ -16,7 +20,35 @@ public class Customer {
     @XmlElement(required = true)
     private Map<Long, Long> fundShares;
 
-    public Customer() {}
+    public static Builder builder() {
+        Builder builder = new Builder();
+        builder.cash(INITIAL_CASH);
+        builder.fundShares(Maps.newHashMap());
+        return builder;
+    }
+
+    public static class Builder {
+        private Customer customer = new Customer();
+
+        public Builder username(String username) {
+            customer.username = username;
+            return this;
+        }
+
+        public Builder cash(BigDecimal cash) {
+            customer.cash = cash;
+            return this;
+        }
+
+        public Builder fundShares(Map<Long, Long> fundShares) {
+            customer.fundShares = fundShares;
+            return this;
+        }
+
+        public Customer build() {
+            return customer;
+        }
+    }
 
     public boolean hasEnoughCash(BigDecimal totalCost) {
         return cash.compareTo(totalCost) >= 0;
@@ -45,24 +77,12 @@ public class Customer {
         return username;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
     public BigDecimal getCash() {
         return cash;
     }
 
-    public void setCash(BigDecimal cash) {
-        this.cash = cash;
-    }
-
     public Map<Long, Long> getFundShares() {
         return fundShares;
-    }
-
-    public void setFundShares(Map<Long, Long> fundShares) {
-        this.fundShares = fundShares;
     }
 
     @Override

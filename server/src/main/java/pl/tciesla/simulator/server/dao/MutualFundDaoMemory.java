@@ -1,6 +1,5 @@
 package pl.tciesla.simulator.server.dao;
 
-import pl.tciesla.simulator.server.builder.MutualFundBuilder;
 import pl.tciesla.simulator.server.domain.MutualFund;
 
 import javax.annotation.PostConstruct;
@@ -30,10 +29,10 @@ public class MutualFundDaoMemory implements MutualFundDao {
     }
 
     private void initializeFund(long id, String name, MutualFund.Category category) {
-        MutualFund fund = MutualFundBuilder.aMutualFundBuilder()
-                .withId(id)
-                .withName(name)
-                .withCategory(category)
+        MutualFund fund = MutualFund.builder()
+                .id(id)
+                .name(name)
+                .category(category)
                 .build();
         mutualFunds.put(fund.getId(), fund);
     }
@@ -55,6 +54,6 @@ public class MutualFundDaoMemory implements MutualFundDao {
 
     @Override
     public void persistAll(List<MutualFund> mutualFunds) {
-        mutualFunds.forEach(e -> persist(e));
+        mutualFunds.forEach(this::persist);
     }
 }

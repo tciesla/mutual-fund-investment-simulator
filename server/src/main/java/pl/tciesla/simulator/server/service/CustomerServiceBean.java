@@ -1,6 +1,5 @@
 package pl.tciesla.simulator.server.service;
 
-import pl.tciesla.simulator.server.builder.CustomerBuilder;
 import pl.tciesla.simulator.server.dao.CustomerDao;
 import pl.tciesla.simulator.server.dao.MutualFundDao;
 import pl.tciesla.simulator.server.domain.Customer;
@@ -63,7 +62,9 @@ public class CustomerServiceBean {
             return Response.status(BAD_REQUEST).build();
         }
 
-        Customer customer = CustomerBuilder.aCustomerBuilder().withName(username).build();
+        Customer customer = Customer.builder()
+                .username(username)
+                .build();
         customerDao.persist(customer);
         log.info("customer with username[" + username + "] has been created");
         return Response.ok(customer).build();

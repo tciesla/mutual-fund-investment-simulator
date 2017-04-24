@@ -8,6 +8,8 @@ import java.math.BigDecimal;
 @XmlType(propOrder = {"id", "name", "category", "valuation"})
 public class MutualFund {
 
+    private static final BigDecimal INITIAL_VALUATION = BigDecimal.valueOf(100.00);
+
     @XmlElement(required = true)
     private Long id;
     @XmlElement(required = true)
@@ -21,36 +23,58 @@ public class MutualFund {
         MONEY_MARKET, BOND, STABLE_GROWTH, BALANCED, STOCK
     }
 
-    public Long getId() {
-        return id;
+    public static Builder builder() {
+        Builder builder = new Builder();
+        builder.valuation(INITIAL_VALUATION);
+        return builder;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public static class Builder {
+        private MutualFund mutualFund = new MutualFund();
+
+        public Builder id(Long id) {
+            mutualFund.id = id;
+            return this;
+        }
+
+        public Builder name(String name) {
+            mutualFund.name = name;
+            return this;
+        }
+
+        public Builder category(Category category) {
+            mutualFund.category = category;
+            return this;
+        }
+
+        public Builder valuation(BigDecimal valuation) {
+            mutualFund.valuation = valuation;
+            return this;
+        }
+
+        public MutualFund build() {
+            return mutualFund;
+        }
+    }
+
+    public void updateValuation(BigDecimal valuation) {
+        this.valuation = valuation;
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public Category getCategory() {
         return category;
     }
 
-    public void setCategory(Category category) {
-        this.category = category;
-    }
-
     public BigDecimal getValuation() {
         return valuation;
-    }
-
-    public void setValuation(BigDecimal valuation) {
-        this.valuation = valuation;
     }
 
     @Override
@@ -70,4 +94,5 @@ public class MutualFund {
     public int hashCode() {
         return id.hashCode();
     }
+
 }
