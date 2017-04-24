@@ -1,12 +1,11 @@
 package pl.tciesla.simulator.server.builder;
 
-import pl.tciesla.simulator.server.constant.ShareType;
 import pl.tciesla.simulator.server.domain.FundShares;
 
 public class FundSharesBuilder {
 
     private Long fundId;
-    private ShareType type;
+    private FundShares.Type type;
 
     public static FundSharesBuilder aFundSharesBuilder() {
         return new FundSharesBuilder();
@@ -17,7 +16,7 @@ public class FundSharesBuilder {
         return this;
     }
 
-    public FundSharesBuilder withType(ShareType type) {
+    public FundSharesBuilder withType(FundShares.Type type) {
         this.type = type;
         return this;
     }

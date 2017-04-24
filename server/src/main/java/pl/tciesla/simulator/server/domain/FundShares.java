@@ -1,7 +1,5 @@
 package pl.tciesla.simulator.server.domain;
 
-import pl.tciesla.simulator.server.constant.ShareType;
-
 import javax.xml.bind.annotation.*;
 
 @XmlRootElement(name = "fund_shares")
@@ -12,8 +10,9 @@ public class FundShares {
     @XmlElement(required = true)
     private Long fundId;
     @XmlElement(required = true)
-    private ShareType type;
+    private Type type;
 
+    public enum Type { A, B }
 
     public FundShares() {}
 
@@ -25,11 +24,11 @@ public class FundShares {
         this.fundId = fundId;
     }
 
-    public ShareType getType() {
+    public Type getType() {
         return type;
     }
 
-    public void setType(ShareType type) {
+    public void setType(Type type) {
         this.type = type;
     }
 

@@ -1,7 +1,5 @@
 package pl.tciesla.simulator.server.domain;
 
-import pl.tciesla.simulator.server.constant.FundCategory;
-
 import javax.xml.bind.annotation.*;
 import java.math.BigDecimal;
 
@@ -15,9 +13,13 @@ public class MutualFund {
     @XmlElement(required = true)
     private String name;
     @XmlElement(required = true)
-    private FundCategory category;
+    private Category category;
     @XmlElement(required = true)
     private BigDecimal valuation;
+
+    public enum Category {
+        MONEY_MARKET, BOND, STABLE_GROWTH, BALANCED, STOCK
+    }
 
     public Long getId() {
         return id;
@@ -35,11 +37,11 @@ public class MutualFund {
         this.name = name;
     }
 
-    public FundCategory getCategory() {
+    public Category getCategory() {
         return category;
     }
 
-    public void setCategory(FundCategory category) {
+    public void setCategory(Category category) {
         this.category = category;
     }
 

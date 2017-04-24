@@ -1,6 +1,5 @@
 package pl.tciesla.simulator.server.builder;
 
-import pl.tciesla.simulator.server.constant.FundCategory;
 import pl.tciesla.simulator.server.domain.MutualFund;
 
 import java.math.BigDecimal;
@@ -11,7 +10,7 @@ public class MutualFundBuilder {
 
     private Long id;
     private String name;
-    private FundCategory category;
+    private MutualFund.Category category;
     private BigDecimal valuation = new BigDecimal(INITIAL_FUND_VALUATION);
 
     public static MutualFundBuilder aMutualFundBuilder() {
@@ -28,7 +27,7 @@ public class MutualFundBuilder {
         return this;
     }
 
-    public MutualFundBuilder withCategory(FundCategory category) {
+    public MutualFundBuilder withCategory(MutualFund.Category category) {
         this.category = category;
         return this;
     }

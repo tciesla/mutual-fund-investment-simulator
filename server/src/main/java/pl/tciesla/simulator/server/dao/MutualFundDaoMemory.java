@@ -1,7 +1,6 @@
 package pl.tciesla.simulator.server.dao;
 
 import pl.tciesla.simulator.server.builder.MutualFundBuilder;
-import pl.tciesla.simulator.server.constant.FundCategory;
 import pl.tciesla.simulator.server.domain.MutualFund;
 
 import javax.annotation.PostConstruct;
@@ -23,14 +22,14 @@ public class MutualFundDaoMemory implements MutualFundDao {
 
     @PostConstruct
     public void initialize() {
-        initializeFund(1L, "Fund 1", FundCategory.MONEY_MARKET);
-        initializeFund(2L, "Fund 2", FundCategory.BOND);
-        initializeFund(3L, "Fund 3", FundCategory.STABLE_GROWTH);
-        initializeFund(4L, "Fund 4", FundCategory.BALANCED);
-        initializeFund(5L, "Fund 5", FundCategory.STOCK);
+        initializeFund(1L, "Fund 1", MutualFund.Category.MONEY_MARKET);
+        initializeFund(2L, "Fund 2", MutualFund.Category.BOND);
+        initializeFund(3L, "Fund 3", MutualFund.Category.STABLE_GROWTH);
+        initializeFund(4L, "Fund 4", MutualFund.Category.BALANCED);
+        initializeFund(5L, "Fund 5", MutualFund.Category.STOCK);
     }
 
-    private void initializeFund(long id, String name, FundCategory category) {
+    private void initializeFund(long id, String name, MutualFund.Category category) {
         MutualFund fund = MutualFundBuilder.aMutualFundBuilder()
                 .withId(id)
                 .withName(name)
