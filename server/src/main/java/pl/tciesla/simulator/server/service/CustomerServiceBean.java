@@ -58,16 +58,14 @@ public class CustomerServiceBean {
             log.info("username cannot be empty");
             return Response.status(BAD_REQUEST).build();
         }
-        if (customerRepository.find(username) != null) {
+        if (customerRepository.find(username).isPresent()) {
             log.info("given username[" + username + "] is already in use");
             return Response.status(BAD_REQUEST).build();
         }
 
-        Customer customer = Customer.builder()
-                .username(username)
-                .build();
-        customerRepository.save(customer);
+        Customer customer = Customer.builder().username(username).build();
         log.info("customer with username[" + username + "] has been created");
+        customerRepository.save(customer);
         return Response.ok(customer).build();
     }
 
