@@ -1,7 +1,7 @@
 package pl.tciesla.simulator.server.service;
 
-import pl.tciesla.simulator.server.dao.MutualFundDao;
 import pl.tciesla.simulator.server.domain.MutualFunds;
+import pl.tciesla.simulator.server.repository.MutualFundRepository;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -17,13 +17,13 @@ import javax.ws.rs.core.MediaType;
 @Stateless
 public class FundsServiceBean {
 
-    @EJB private MutualFundDao mutualFundDao;
+    @EJB private MutualFundRepository mutualFundRepository;
 
     @GET
     @Produces(MediaType.APPLICATION_XML)
     public MutualFunds getFunds() {
         MutualFunds mutualFunds = new MutualFunds();
-        mutualFunds.setMutualFunds(mutualFundDao.fetchAll());
+        mutualFunds.setMutualFunds(mutualFundRepository.findAll());
         return mutualFunds;
     }
 }

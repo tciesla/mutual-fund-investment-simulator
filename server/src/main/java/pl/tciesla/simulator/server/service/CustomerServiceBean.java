@@ -1,15 +1,16 @@
 package pl.tciesla.simulator.server.service;
 
-import pl.tciesla.simulator.server.dao.CustomerDao;
-import pl.tciesla.simulator.server.dao.MutualFundDao;
 import pl.tciesla.simulator.server.domain.Customer;
 import pl.tciesla.simulator.server.domain.MutualFund;
+import pl.tciesla.simulator.server.repository.CustomerRepository;
+import pl.tciesla.simulator.server.repository.MutualFundRepository;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import java.math.BigDecimal;
+import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.logging.Logger;
 
@@ -24,10 +25,10 @@ public class CustomerServiceBean {
     private static final BigDecimal FEE_RATE = BigDecimal.valueOf(0.02);
 
     @EJB
-    private CustomerDao customerDao;
+    private CustomerRepository customerRepository;
 
     @EJB
-    private MutualFundDao mutualFundDao;
+    private MutualFundRepository mutualFundRepository;
 
     @GET
     @Path("/{username}")
@@ -39,13 +40,13 @@ public class CustomerServiceBean {
             return Response.status(BAD_REQUEST).build();
         }
 
-        Customer customer = customerDao.fetch(username);
-        if (customer == null) {
+        Optional<Customer> customer = customerRepository.find(username);
+        if (!customer.isPresent()) {
             log.info("customer with username[" + username + "] not found");
             return Response.status(NOT_FOUND).build();
         }
 
-        return Response.ok(customer).build();
+        return Response.ok(customer.get()).build();
     }
 
     @POST
@@ -57,7 +58,7 @@ public class CustomerServiceBean {
             log.info("username cannot be empty");
             return Response.status(BAD_REQUEST).build();
         }
-        if (customerDao.fetch(username) != null) {
+        if (customerRepository.find(username) != null) {
             log.info("given username[" + username + "] is already in use");
             return Response.status(BAD_REQUEST).build();
         }
@@ -65,7 +66,7 @@ public class CustomerServiceBean {
         Customer customer = Customer.builder()
                 .username(username)
                 .build();
-        customerDao.persist(customer);
+        customerRepository.save(customer);
         log.info("customer with username[" + username + "] has been created");
         return Response.ok(customer).build();
     }
@@ -80,7 +81,7 @@ public class CustomerServiceBean {
             return Response.status(BAD_REQUEST).build();
         }
 
-        boolean removed = customerDao.remove(username);
+        boolean removed = customerRepository.delete(username);
         if (!removed) {
             log.info("customer with username[" + username + "] not removed");
             return Response.status(INTERNAL_SERVER_ERROR).build();
@@ -104,8 +105,8 @@ public class CustomerServiceBean {
             return Response.status(BAD_REQUEST).build();
         }
 
-        Customer customer = customerDao.fetch(username);
-        if (customer == null) {
+        Optional<Customer> customerOptional = customerRepository.find(username);
+        if (!customerOptional.isPresent()) {
             log.info("customer with username[" + username + "] not found");
             return Response.status(BAD_REQUEST).build();
         }
@@ -115,8 +116,8 @@ public class CustomerServiceBean {
             return Response.status(BAD_REQUEST).build();
         }
 
-        MutualFund mutualFund = mutualFundDao.fetch(fundId);
-        if (mutualFund == null) {
+        Optional<MutualFund> mutualFundOptional = mutualFundRepository.find(fundId);
+        if (!mutualFundOptional.isPresent()) {
             log.info("fund with id[" + fundId + "] not found");
             return Response.status(BAD_REQUEST).build();
         }
@@ -126,14 +127,16 @@ public class CustomerServiceBean {
             return Response.status(BAD_REQUEST).build();
         }
 
+        MutualFund mutualFund = mutualFundOptional.get();
         BigDecimal transactionCost = calculateTransactionCashFlow(mutualFund, amount, BigDecimal::add);
+        Customer customer = customerOptional.get();
         if (!customer.hasEnoughCash(transactionCost)) {
             log.info("customer do not have enough cash to buy shares.");
             return Response.status(BAD_REQUEST).build();
         }
 
         customer.buy(fundId, amount, transactionCost);
-        customerDao.persist(customer);
+        customerRepository.save(customer);
         log.info("buy transaction completed");
 
         return Response.ok().build();
@@ -153,8 +156,8 @@ public class CustomerServiceBean {
             return Response.status(BAD_REQUEST).build();
         }
 
-        Customer customer = customerDao.fetch(username);
-        if (customer == null) {
+        Optional<Customer> customerOptional = customerRepository.find(username);
+        if (!customerOptional.isPresent()) {
             log.info("customer with username[" + username + "] not found");
             return Response.status(BAD_REQUEST).build();
         }
@@ -164,8 +167,8 @@ public class CustomerServiceBean {
             return Response.status(BAD_REQUEST).build();
         }
 
-        MutualFund mutualFund = mutualFundDao.fetch(fundId);
-        if (mutualFund == null) {
+        Optional<MutualFund> mutualFundOptional = mutualFundRepository.find(fundId);
+        if (!mutualFundOptional.isPresent()) {
             log.info("fund with id[" + fundId + "] not found");
             return Response.status(BAD_REQUEST).build();
         }
@@ -175,14 +178,16 @@ public class CustomerServiceBean {
             return Response.status(BAD_REQUEST).build();
         }
 
+        Customer customer = customerOptional.get();
         if (!customer.hasEnoughShares(fundId, amount)) {
             log.info("customer do not have enough shares to sell.");
             return Response.status(BAD_REQUEST).build();
         }
 
+        MutualFund mutualFund = mutualFundOptional.get();
         BigDecimal transactionProfit = calculateTransactionCashFlow(mutualFund, amount, BigDecimal::subtract);
         customer.sell(fundId, amount, transactionProfit);
-        customerDao.persist(customer);
+        customerRepository.save(customer);
         log.info("sell transaction completed.");
 
         return Response.ok().build();
@@ -198,16 +203,18 @@ public class CustomerServiceBean {
             return Response.status(BAD_REQUEST).build();
         }
 
-        Customer customer = customerDao.fetch(username);
-        if (customer == null) {
+
+        Optional<Customer> customerOptional = customerRepository.find(username);
+        if (!customerOptional.isPresent()) {
             log.info("customer with username[" + username + "] not found");
             return Response.status(BAD_REQUEST).build();
         }
 
+        Customer customer = customerOptional.get();
         BigDecimal walletValuation = customer.getFundShares().entrySet().stream()
                 .map((entry) -> {
                     Long fundId = entry.getKey();
-                    BigDecimal valuation = mutualFundDao.fetch(fundId).getValuation();
+                    BigDecimal valuation = mutualFundRepository.find(fundId).get().getValuation();
                     Long shares = entry.getValue();
                     return valuation.multiply(BigDecimal.valueOf(shares));
                 }).reduce(customer.getCash(), BigDecimal::add);

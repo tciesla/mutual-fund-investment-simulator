@@ -7,8 +7,8 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import pl.tciesla.simulator.server.dao.MutualFundDao;
 import pl.tciesla.simulator.server.domain.MutualFund;
+import pl.tciesla.simulator.server.repository.MutualFundRepository;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -21,7 +21,7 @@ import static org.mockito.Mockito.verify;
 public class MutualFundsValuationCronTest {
 
     @Mock
-    private MutualFundDao mutualFundDao;
+    private MutualFundRepository mutualFundRepository;
 
     @InjectMocks
     private MutualFundsValuationCron mutualFundsValuationCron;
@@ -34,7 +34,7 @@ public class MutualFundsValuationCronTest {
         mutualFund1 = createMutualFund(1L, "Best of US Stocks", BigDecimal.valueOf(100.11));
         mutualFund2 = createMutualFund(2L, "Best of UK Stocks", BigDecimal.valueOf(200.22));
         List<MutualFund> mutualFunds = Lists.newArrayList(mutualFund1, mutualFund2);
-        doReturn(mutualFunds).when(mutualFundDao).fetchAll();
+        doReturn(mutualFunds).when(mutualFundRepository).findAll();
     }
 
     @Test
@@ -54,8 +54,8 @@ public class MutualFundsValuationCronTest {
         // when
         mutualFundsValuationCron.updateMutualFundsValuation();
         // then
-        verify(mutualFundDao).persist(mutualFund1);
-        verify(mutualFundDao).persist(mutualFund2);
+        verify(mutualFundRepository).save(mutualFund1);
+        verify(mutualFundRepository).save(mutualFund2);
     }
 
     private MutualFund createMutualFund(long id, String name, BigDecimal valuation) {
