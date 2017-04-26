@@ -2,8 +2,8 @@ package pl.tciesla.mutual.fund.simulator.server.rest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pl.tciesla.mutual.fund.simulator.server.domain.Customer;
-import pl.tciesla.mutual.fund.simulator.server.domain.MutualFund;
+import pl.tciesla.mutual.fund.simulator.server.model.Customer;
+import pl.tciesla.mutual.fund.simulator.server.model.MutualFund;
 import pl.tciesla.mutual.fund.simulator.server.repository.CustomerRepository;
 import pl.tciesla.mutual.fund.simulator.server.repository.MutualFundRepository;
 

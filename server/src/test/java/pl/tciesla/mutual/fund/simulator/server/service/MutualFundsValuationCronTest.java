@@ -7,7 +7,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import pl.tciesla.mutual.fund.simulator.server.domain.MutualFund;
+import pl.tciesla.mutual.fund.simulator.server.model.MutualFund;
 import pl.tciesla.mutual.fund.simulator.server.repository.MutualFundRepository;
 
 import java.math.BigDecimal;

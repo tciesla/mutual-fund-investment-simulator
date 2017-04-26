@@ -2,7 +2,7 @@ package pl.tciesla.mutual.fund.simulator.server.repository;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import pl.tciesla.mutual.fund.simulator.server.domain.MutualFund;
+import pl.tciesla.mutual.fund.simulator.server.model.MutualFund;
 
 import javax.ejb.Singleton;
 import javax.ejb.Startup;

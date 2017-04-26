@@ -1,7 +1,7 @@
 package pl.tciesla.mutual.fund.simulator.server.service;
 
 import com.google.common.base.Preconditions;
-import pl.tciesla.mutual.fund.simulator.server.domain.MutualFund;
+import pl.tciesla.mutual.fund.simulator.server.model.MutualFund;
 
 import java.math.BigDecimal;
 import java.util.Random;

@@ -1,4 +1,4 @@
-package pl.tciesla.mutual.fund.simulator.server.domain;
+package pl.tciesla.mutual.fund.simulator.server.model;
 
 import com.google.common.collect.Maps;
 

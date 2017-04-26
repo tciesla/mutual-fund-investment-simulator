@@ -1,6 +1,6 @@
 package pl.tciesla.mutual.fund.simulator.server.repository;
 
-import pl.tciesla.mutual.fund.simulator.server.domain.MutualFund;
+import pl.tciesla.mutual.fund.simulator.server.model.MutualFund;
 
 import java.util.List;
 import java.util.Optional;

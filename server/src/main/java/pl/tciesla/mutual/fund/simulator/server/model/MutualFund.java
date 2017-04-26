@@ -1,4 +1,4 @@
-package pl.tciesla.mutual.fund.simulator.server.domain;
+package pl.tciesla.mutual.fund.simulator.server.model;
 
 import javax.xml.bind.annotation.*;
 import java.math.BigDecimal;
