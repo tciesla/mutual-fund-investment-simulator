@@ -1,9 +1,9 @@
-package pl.tciesla.simulator.server.repository;
+package pl.tciesla.mutual.fund.simulator.server.repository;
 
 import com.google.common.base.Preconditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pl.tciesla.simulator.server.domain.Customer;
+import pl.tciesla.mutual.fund.simulator.server.domain.Customer;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.Singleton;
@@ -71,17 +71,15 @@ public class CustomerRepositoryXml implements CustomerRepository {
     }
 
     @Override
-    public boolean delete(String username) {
+    public void delete(String username) {
         Preconditions.checkNotNull(username, "username == null");
         Preconditions.checkArgument(!username.isEmpty(), "username is empty");
 
         try {
             Path customerFilename = Paths.get(username + XML_FILE_EXTENSION);
             Files.delete(customerFilename);
-            return true;
         } catch (IOException e) {
             logger.error("error occur while deleting customer file", e);
-            return false;
         }
     }
 

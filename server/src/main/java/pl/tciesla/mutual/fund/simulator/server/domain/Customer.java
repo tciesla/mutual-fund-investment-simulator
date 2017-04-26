@@ -1,4 +1,4 @@
-package pl.tciesla.simulator.server.domain;
+package pl.tciesla.mutual.fund.simulator.server.domain;
 
 import com.google.common.collect.Maps;
 
@@ -102,4 +102,5 @@ public class Customer {
     public int hashCode() {
         return username.hashCode();
     }
+
 }

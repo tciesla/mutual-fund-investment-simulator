@@ -1,10 +1,10 @@
-package pl.tciesla.simulator.server.valuation;
+package pl.tciesla.mutual.fund.simulator.server.service;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import pl.tciesla.simulator.server.domain.MutualFund;
+import pl.tciesla.mutual.fund.simulator.server.domain.MutualFund;
 
 import java.math.BigDecimal;
 

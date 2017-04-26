@@ -1,4 +1,4 @@
-package pl.tciesla.simulator.server.valuation;
+package pl.tciesla.mutual.fund.simulator.server.service;
 
 import org.junit.Test;
 

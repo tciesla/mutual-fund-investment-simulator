@@ -1,8 +1,8 @@
-package pl.tciesla.simulator.server.valuation;
+package pl.tciesla.mutual.fund.simulator.server.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pl.tciesla.simulator.server.repository.MutualFundRepository;
+import pl.tciesla.mutual.fund.simulator.server.repository.MutualFundRepository;
 
 import javax.ejb.EJB;
 import javax.ejb.Schedule;

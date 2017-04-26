@@ -1,4 +1,4 @@
-package pl.tciesla.simulator.server.valuation;
+package pl.tciesla.mutual.fund.simulator.server.service;
 
 import org.assertj.core.util.Lists;
 import org.junit.Before;
@@ -7,8 +7,8 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import pl.tciesla.simulator.server.domain.MutualFund;
-import pl.tciesla.simulator.server.repository.MutualFundRepository;
+import pl.tciesla.mutual.fund.simulator.server.domain.MutualFund;
+import pl.tciesla.mutual.fund.simulator.server.repository.MutualFundRepository;
 
 import java.math.BigDecimal;
 import java.util.List;
