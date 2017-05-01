@@ -6,6 +6,9 @@ import javax.xml.bind.annotation.*;
 import java.math.BigDecimal;
 import java.util.Map;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(propOrder = {"username", "cash", "fundShares"})
@@ -31,40 +34,55 @@ public class Customer {
         private Customer customer = new Customer();
 
         public Builder username(String username) {
+            checkNotNull(username, "username == null");
+            checkArgument(!username.isEmpty(), "username is empty");
+
             customer.username = username;
             return this;
         }
 
         public Builder cash(BigDecimal cash) {
+            checkNotNull(cash, "cash == null");
+            checkArgument(cash.compareTo(BigDecimal.ZERO) >= 0, "cash is negative");
+
             customer.cash = cash;
             return this;
         }
 
         public Builder fundShares(Map<Long, Long> fundShares) {
-            customer.fundShares = fundShares;
+            customer.fundShares = checkNotNull(fundShares, "fundShares == null");
             return this;
         }
 
         public Customer build() {
+            if (customer.username == null) {
+                throw new NullPointerException("username == null");
+            }
             return customer;
         }
     }
 
-    public boolean hasEnoughCash(BigDecimal totalCost) {
-        return cash.compareTo(totalCost) >= 0;
+    public boolean hasEnoughCash(BigDecimal requiredCash) {
+        checkNotNull(requiredCash, "requiredCash == null");
+        return cash.compareTo(requiredCash) >= 0;
     }
 
-    public boolean hasEnoughShares(Long fundId, Long amount) {
+    public boolean hasEnoughShares(long fundId, long amount) {
         return fundShares.getOrDefault(fundId, 0L) >= amount;
     }
 
-    public void buy(Long fundId, Long amount, BigDecimal transactionCost) {
-        cash = cash.subtract(transactionCost);
+    public void buy(long fundId, long amount, BigDecimal cost) {
+        checkArgument(cash.compareTo(cost) >= 0, "cost too high");
+
+        cash = cash.subtract(cost);
         Long oldAmount = fundShares.getOrDefault(fundId, 0L);
         fundShares.put(fundId, oldAmount + amount);
     }
 
-    public void sell(Long fundId, Long amount, BigDecimal transactionProfit) {
+    public void sell(long fundId, long amount, BigDecimal transactionProfit) {
+        checkArgument(fundShares.containsKey(fundId), "customer does not have any fund shares");
+        checkArgument(fundShares.get(fundId).compareTo(amount) >= 0, "sharesAmount too high");
+
         cash = cash.add(transactionProfit);
         long oldSharesAmount = fundShares.get(fundId);
         fundShares.put(fundId, oldSharesAmount - amount);
