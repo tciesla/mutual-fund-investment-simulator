@@ -1,14 +1,11 @@
 package pl.tciesla.mutual.fund.simulator.server.rest;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import pl.tciesla.mutual.fund.simulator.server.model.Customer;
 import pl.tciesla.mutual.fund.simulator.server.model.MutualFund;
 import pl.tciesla.mutual.fund.simulator.server.repository.CustomerRepository;
 import pl.tciesla.mutual.fund.simulator.server.repository.MutualFundRepository;
 
 import javax.ejb.EJB;
-import javax.ejb.Stateless;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -19,34 +16,32 @@ import java.util.function.BiFunction;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 
-@Stateless
 @Path("/customers")
 @Produces(MediaType.APPLICATION_XML)
 public class CustomerResource {
 
-    private static final Logger logger = LoggerFactory.getLogger(CustomerResource.class);
+    private static final String USERNAME_PARAM = "username";
+    private static final String USERNAME_PARAM_PATH = "/{username}";
+    private static final String FUND_ID_PARAM = "fundId";
+    private static final String FUND_ID_PARAM_PATH = "/{fundId}";
+    private static final String AMOUNT_PARAM = "amount";
+    private static final String AMOUNT_PARAM_PATH = "/{amount}";
 
     private static final BigDecimal FEE_RATE = BigDecimal.valueOf(0.02);
 
-    @EJB
-    private CustomerRepository customerRepository;
-
-    @EJB
-    private MutualFundRepository mutualFundRepository;
+    @EJB private CustomerRepository customerRepository;
+    @EJB private MutualFundRepository mutualFundRepository;
 
     @GET
-    @Path("/{username}")
-    public Response getCustomer(@PathParam("username") String username) {
-        logger.info("request get customer for username[" + username + "]");
+    @Path(USERNAME_PARAM_PATH)
+    public Response getCustomer(@PathParam(USERNAME_PARAM) String username) {
 
         if (username == null || username.isEmpty()) {
-            logger.info("username cannot be empty");
             return Response.status(BAD_REQUEST).build();
         }
 
         Optional<Customer> customer = customerRepository.find(username);
         if (!customer.isPresent()) {
-            logger.info("customer with username[" + username + "] not found");
             return Response.status(NOT_FOUND).build();
         }
 
@@ -54,73 +49,59 @@ public class CustomerResource {
     }
 
     @POST
-    @Path("/{username}")
-    public Response createCustomer(@PathParam("username") String username) {
-        logger.info("request create customer for username[" + username + "]");
+    @Path(USERNAME_PARAM_PATH)
+    public Response createCustomer(@PathParam(USERNAME_PARAM) String username) {
 
         if (username == null || username.isEmpty()) {
-            logger.info("username cannot be empty");
             return Response.status(BAD_REQUEST).build();
         }
         if (customerRepository.find(username).isPresent()) {
-            logger.info("given username[" + username + "] is already in use");
             return Response.status(BAD_REQUEST).build();
         }
 
         Customer customer = Customer.builder().username(username).build();
-        logger.info("customer with username[" + username + "] has been created");
         customerRepository.save(customer);
         return Response.ok(customer).build();
     }
 
     @DELETE
-    @Path("/{username}")
-    public Response deleteCustomer(@PathParam("username") String username) {
-        logger.info("request delete customer for username[" + username + "]");
+    @Path(USERNAME_PARAM_PATH)
+    public Response deleteCustomer(@PathParam(USERNAME_PARAM) String username) {
 
         if (username == null || username.isEmpty()) {
-            logger.info("username cannot be empty");
             return Response.status(BAD_REQUEST).build();
         }
 
         customerRepository.delete(username);
-        logger.info("customer with username[" + username + "] has been removed");
         return Response.ok().build();
     }
 
     @GET
-    @Path("/{username}/buy/{fundId}/{amount}")
+    @Path(USERNAME_PARAM_PATH + "/buy" + FUND_ID_PARAM_PATH + AMOUNT_PARAM_PATH)
     public Response buyFundShares(
-            @PathParam("username") String username,
-            @PathParam("fundId") Long fundId,
-            @PathParam("amount") Long amount) {
-
-        logger.info("request buy shares for username[" + username + "]");
+            @PathParam(USERNAME_PARAM) String username,
+            @PathParam(FUND_ID_PARAM) Long fundId,
+            @PathParam(AMOUNT_PARAM) Long amount) {
 
         if (username == null || username.isEmpty()) {
-            logger.info("username cannot be empty");
             return Response.status(BAD_REQUEST).build();
         }
 
         Optional<Customer> customerOptional = customerRepository.find(username);
         if (!customerOptional.isPresent()) {
-            logger.info("customer with username[" + username + "] not found");
             return Response.status(BAD_REQUEST).build();
         }
 
         if (fundId == null) {
-            logger.info("incorrect mutual fund id");
             return Response.status(BAD_REQUEST).build();
         }
 
         Optional<MutualFund> mutualFundOptional = mutualFundRepository.find(fundId);
         if (!mutualFundOptional.isPresent()) {
-            logger.info("fund with id[" + fundId + "] not found");
             return Response.status(BAD_REQUEST).build();
         }
 
         if (amount == null || amount <= 0) {
-            logger.info("incorrect shares amount");
             return Response.status(BAD_REQUEST).build();
         }
 
@@ -128,55 +109,45 @@ public class CustomerResource {
         BigDecimal transactionCost = calculateTransactionCashFlow(mutualFund, amount, BigDecimal::add);
         Customer customer = customerOptional.get();
         if (!customer.hasEnoughCash(transactionCost)) {
-            logger.info("customer do not have enough cash to buy shares.");
             return Response.status(BAD_REQUEST).build();
         }
 
         customer.buy(fundId, amount, transactionCost);
         customerRepository.save(customer);
-        logger.info("buy transaction completed");
         return Response.ok().build();
     }
 
     @GET
-    @Path("/{username}/sell/{fundId}/{amount}")
+    @Path(USERNAME_PARAM_PATH + "/sell" + FUND_ID_PARAM_PATH + AMOUNT_PARAM_PATH)
     public Response sellShares(
-            @PathParam("username") String username,
-            @PathParam("fundId") Long fundId,
-            @PathParam("amount") Long amount) {
-
-        logger.info("request sell shares for username[" + username + "]");
+            @PathParam(USERNAME_PARAM) String username,
+            @PathParam(FUND_ID_PARAM) Long fundId,
+            @PathParam(AMOUNT_PARAM) Long amount) {
 
         if (username == null || username.isEmpty()) {
-            logger.info("username cannot be empty");
             return Response.status(BAD_REQUEST).build();
         }
 
         Optional<Customer> customerOptional = customerRepository.find(username);
         if (!customerOptional.isPresent()) {
-            logger.info("customer with username[" + username + "] not found");
             return Response.status(BAD_REQUEST).build();
         }
 
         if (fundId == null) {
-            logger.info("incorrect mutual fund id");
             return Response.status(BAD_REQUEST).build();
         }
 
         Optional<MutualFund> mutualFundOptional = mutualFundRepository.find(fundId);
         if (!mutualFundOptional.isPresent()) {
-            logger.info("fund with id[" + fundId + "] not found");
             return Response.status(BAD_REQUEST).build();
         }
 
         if (amount == null || amount <= 0) {
-            logger.info("incorrect shares amount");
             return Response.status(BAD_REQUEST).build();
         }
 
         Customer customer = customerOptional.get();
         if (!customer.hasEnoughShares(fundId, amount)) {
-            logger.info("customer do not have enough shares to sell.");
             return Response.status(BAD_REQUEST).build();
         }
 
@@ -184,23 +155,20 @@ public class CustomerResource {
         BigDecimal transactionProfit = calculateTransactionCashFlow(mutualFund, amount, BigDecimal::subtract);
         customer.sell(fundId, amount, transactionProfit);
         customerRepository.save(customer);
-        logger.info("sell transaction completed.");
+
         return Response.ok().build();
     }
 
     @GET
-    @Path("/{username}/valuation")
-    public Response getWalletValuation(@PathParam("username") String username) {
-        logger.info("request wallet valuation for username[" + username + "]");
+    @Path(USERNAME_PARAM_PATH + "/valuation")
+    public Response getWalletValuation(@PathParam(USERNAME_PARAM) String username) {
 
         if (username == null || username.isEmpty()) {
-            logger.info("username cannot be empty");
             return Response.status(BAD_REQUEST).build();
         }
 
         Optional<Customer> customerOptional = customerRepository.find(username);
         if (!customerOptional.isPresent()) {
-            logger.info("customer with username[" + username + "] not found");
             return Response.status(BAD_REQUEST).build();
         }
 
