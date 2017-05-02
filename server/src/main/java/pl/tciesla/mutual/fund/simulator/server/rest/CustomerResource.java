@@ -21,11 +21,11 @@ import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 public class CustomerResource {
 
     private static final String USERNAME_PARAM = "username";
-    private static final String USERNAME_PARAM_PATH = "/{username}";
+    private static final String USERNAME_PARAM_PATH = "/{username: [a-z]+[0-9]*}";
     private static final String FUND_ID_PARAM = "fundId";
-    private static final String FUND_ID_PARAM_PATH = "/{fundId}";
+    private static final String FUND_ID_PARAM_PATH = "/{fundId: [1-9][0-9]*}";
     private static final String AMOUNT_PARAM = "amount";
-    private static final String AMOUNT_PARAM_PATH = "/{amount}";
+    private static final String AMOUNT_PARAM_PATH = "/{amount: [1-9][0-9]*}";
 
     private static final BigDecimal FEE_RATE = BigDecimal.valueOf(0.02);
 
