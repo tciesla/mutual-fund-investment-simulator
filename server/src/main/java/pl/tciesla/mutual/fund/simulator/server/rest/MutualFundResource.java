@@ -16,12 +16,13 @@ import java.util.List;
 @Produces(MediaType.APPLICATION_XML)
 public class MutualFundResource {
 
-    @EJB private MutualFundRepository mutualFundRepository;
+    @EJB
+    private MutualFundRepository mutualFundRepository;
 
     @GET
     public Response getMutualFunds() {
         List<MutualFund> mutualFunds = mutualFundRepository.findAll();
-        return Response.ok(new GenericEntity<List<MutualFund>>(mutualFunds){}).build();
+        return Response.ok(new GenericEntity<List<MutualFund>>(mutualFunds) {}).build();
     }
 
 }
