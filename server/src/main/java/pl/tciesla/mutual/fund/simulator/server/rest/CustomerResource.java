@@ -13,8 +13,7 @@ import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.function.BiFunction;
 
-import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
-import static javax.ws.rs.core.Response.Status.NOT_FOUND;
+import static javax.ws.rs.core.Response.Status.*;
 
 @Path("/customers")
 @Produces(MediaType.APPLICATION_XML)
@@ -29,38 +28,31 @@ public class CustomerResource {
 
     private static final BigDecimal FEE_RATE = BigDecimal.valueOf(0.02);
 
-    @EJB private CustomerRepository customerRepository;
-    @EJB private MutualFundRepository mutualFundRepository;
+    @EJB
+    private CustomerRepository customerRepository;
+
+    @EJB
+    private MutualFundRepository mutualFundRepository;
 
     @GET
     @Path(USERNAME_PARAM_PATH)
     public Response getCustomer(@PathParam(USERNAME_PARAM) String username) {
-
-        if (username == null || username.isEmpty()) {
-            return Response.status(BAD_REQUEST).build();
-        }
-
         Optional<Customer> customer = customerRepository.find(username);
-        if (!customer.isPresent()) {
-            return Response.status(NOT_FOUND).build();
-        }
-
-        return Response.ok(customer.get()).build();
+        return customer.isPresent() ? Response.ok(customer.get()).build() :
+                Response.status(NOT_FOUND).build();
     }
 
     @POST
     @Path(USERNAME_PARAM_PATH)
     public Response createCustomer(@PathParam(USERNAME_PARAM) String username) {
 
-        if (username == null || username.isEmpty()) {
-            return Response.status(BAD_REQUEST).build();
-        }
         if (customerRepository.find(username).isPresent()) {
-            return Response.status(BAD_REQUEST).build();
+            return Response.status(CONFLICT).build();
         }
 
         Customer customer = Customer.builder().username(username).build();
         customerRepository.save(customer);
+        // TODO should return status CREATED(201)
         return Response.ok(customer).build();
     }
 
@@ -68,12 +60,12 @@ public class CustomerResource {
     @Path(USERNAME_PARAM_PATH)
     public Response deleteCustomer(@PathParam(USERNAME_PARAM) String username) {
 
-        if (username == null || username.isEmpty()) {
-            return Response.status(BAD_REQUEST).build();
+        if (!customerRepository.find(username).isPresent()) {
+            return Response.status(NOT_FOUND).build();
         }
 
         customerRepository.delete(username);
-        return Response.ok().build();
+        return Response.noContent().build();
     }
 
     @GET
@@ -82,10 +74,6 @@ public class CustomerResource {
             @PathParam(USERNAME_PARAM) String username,
             @PathParam(FUND_ID_PARAM) Long fundId,
             @PathParam(AMOUNT_PARAM) Long amount) {
-
-        if (username == null || username.isEmpty()) {
-            return Response.status(BAD_REQUEST).build();
-        }
 
         Optional<Customer> customerOptional = customerRepository.find(username);
         if (!customerOptional.isPresent()) {
@@ -124,10 +112,6 @@ public class CustomerResource {
             @PathParam(FUND_ID_PARAM) Long fundId,
             @PathParam(AMOUNT_PARAM) Long amount) {
 
-        if (username == null || username.isEmpty()) {
-            return Response.status(BAD_REQUEST).build();
-        }
-
         Optional<Customer> customerOptional = customerRepository.find(username);
         if (!customerOptional.isPresent()) {
             return Response.status(BAD_REQUEST).build();
@@ -162,10 +146,6 @@ public class CustomerResource {
     @GET
     @Path(USERNAME_PARAM_PATH + "/valuation")
     public Response getWalletValuation(@PathParam(USERNAME_PARAM) String username) {
-
-        if (username == null || username.isEmpty()) {
-            return Response.status(BAD_REQUEST).build();
-        }
 
         Optional<Customer> customerOptional = customerRepository.find(username);
         if (!customerOptional.isPresent()) {
