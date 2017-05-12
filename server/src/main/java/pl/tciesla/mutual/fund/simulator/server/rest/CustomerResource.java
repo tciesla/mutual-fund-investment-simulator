@@ -45,7 +45,6 @@ public class CustomerResource {
     @POST
     @Path(USERNAME_PARAM_PATH)
     public Response createCustomer(@PathParam(USERNAME_PARAM) String username) {
-
         if (customerRepository.find(username).isPresent()) {
             return Response.status(CONFLICT).build();
         }
@@ -59,7 +58,6 @@ public class CustomerResource {
     @DELETE
     @Path(USERNAME_PARAM_PATH)
     public Response deleteCustomer(@PathParam(USERNAME_PARAM) String username) {
-
         if (!customerRepository.find(username).isPresent()) {
             return Response.status(NOT_FOUND).build();
         }
@@ -68,7 +66,7 @@ public class CustomerResource {
         return Response.noContent().build();
     }
 
-    @GET
+    @PUT
     @Path(USERNAME_PARAM_PATH + "/buy" + FUND_ID_PARAM_PATH + AMOUNT_PARAM_PATH)
     public Response buyFundShares(
             @PathParam(USERNAME_PARAM) String username,
@@ -77,20 +75,12 @@ public class CustomerResource {
 
         Optional<Customer> customerOptional = customerRepository.find(username);
         if (!customerOptional.isPresent()) {
-            return Response.status(BAD_REQUEST).build();
-        }
-
-        if (fundId == null) {
-            return Response.status(BAD_REQUEST).build();
+            return Response.status(NOT_FOUND).build();
         }
 
         Optional<MutualFund> mutualFundOptional = mutualFundRepository.find(fundId);
         if (!mutualFundOptional.isPresent()) {
-            return Response.status(BAD_REQUEST).build();
-        }
-
-        if (amount == null || amount <= 0) {
-            return Response.status(BAD_REQUEST).build();
+            return Response.status(NOT_FOUND).build();
         }
 
         MutualFund mutualFund = mutualFundOptional.get();
@@ -105,7 +95,7 @@ public class CustomerResource {
         return Response.ok().build();
     }
 
-    @GET
+    @PUT
     @Path(USERNAME_PARAM_PATH + "/sell" + FUND_ID_PARAM_PATH + AMOUNT_PARAM_PATH)
     public Response sellShares(
             @PathParam(USERNAME_PARAM) String username,
@@ -114,20 +104,12 @@ public class CustomerResource {
 
         Optional<Customer> customerOptional = customerRepository.find(username);
         if (!customerOptional.isPresent()) {
-            return Response.status(BAD_REQUEST).build();
-        }
-
-        if (fundId == null) {
-            return Response.status(BAD_REQUEST).build();
+            return Response.status(NOT_FOUND).build();
         }
 
         Optional<MutualFund> mutualFundOptional = mutualFundRepository.find(fundId);
         if (!mutualFundOptional.isPresent()) {
-            return Response.status(BAD_REQUEST).build();
-        }
-
-        if (amount == null || amount <= 0) {
-            return Response.status(BAD_REQUEST).build();
+            return Response.status(NOT_FOUND).build();
         }
 
         Customer customer = customerOptional.get();
@@ -139,33 +121,11 @@ public class CustomerResource {
         BigDecimal transactionProfit = calculateTransactionCashFlow(mutualFund, amount, BigDecimal::subtract);
         customer.sell(fundId, amount, transactionProfit);
         customerRepository.save(customer);
-
         return Response.ok().build();
     }
 
-    @GET
-    @Path(USERNAME_PARAM_PATH + "/valuation")
-    public Response getWalletValuation(@PathParam(USERNAME_PARAM) String username) {
-
-        Optional<Customer> customerOptional = customerRepository.find(username);
-        if (!customerOptional.isPresent()) {
-            return Response.status(BAD_REQUEST).build();
-        }
-
-        Customer customer = customerOptional.get();
-        BigDecimal walletValuation = customer.getFundShares().entrySet().stream()
-                .map((entry) -> {
-                    Long fundId = entry.getKey();
-                    BigDecimal valuation = mutualFundRepository.find(fundId).get().getValuation();
-                    Long shares = entry.getValue();
-                    return valuation.multiply(BigDecimal.valueOf(shares));
-                }).reduce(customer.getCash(), BigDecimal::add);
-
-        return Response.ok(walletValuation).build();
-    }
-
     private BigDecimal calculateTransactionCashFlow(MutualFund mutualFund, Long amount,
-                                                    BiFunction<BigDecimal, BigDecimal, BigDecimal> f) {
+            BiFunction<BigDecimal, BigDecimal, BigDecimal> f) {
 
         BigDecimal currentFundValuation = mutualFund.getValuation();
         BigDecimal transactionValue = currentFundValuation.multiply(BigDecimal.valueOf(amount));
